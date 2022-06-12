@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.LoginDTO;
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ import java.util.UUID;
 
 
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:3000")
 @RequestMapping("/user/")
 public class UserController {
 
@@ -34,7 +35,9 @@ public class UserController {
         Integer id = (int) ((Math.random() * (3000 - 1)) + 1);
         user.setId(id);
        String checkUserExists = String.valueOf(userRepository.findById(user.getId()));
-       if(checkUserExists != "Optional.empty"){
+       String checkEmailExists = String.valueOf(userRepository.findUserByEmail(user.getEmail()));
+       System.out.println(checkEmailExists);
+       if(checkUserExists != "Optional.empty" || checkEmailExists != "null"){
            return new ResponseEntity(HttpStatus.BAD_REQUEST);
        }else{
            userRepository.save(user);
@@ -42,6 +45,16 @@ public class UserController {
        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
+    @PostMapping(value = "/login/")
+    public ResponseEntity login(@RequestBody LoginDTO user) {
+        String login = String.valueOf(userRepository.login(user.getEmail(),user.getSenha()));
+        if(login == "null"){
+            return new ResponseEntity(HttpStatus.BAD_REQUEST);
+        }else{
+           User loginUser =  userRepository.login(user.getEmail(),user.getSenha());
+            return new ResponseEntity<>(loginUser, HttpStatus.OK);
+        }
+    }
     @GetMapping
     public ResponseEntity<List<User>> getAll(){
         List<User> users ;
