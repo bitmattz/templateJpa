@@ -2,26 +2,43 @@ package com.example.demo.controller;
 
 import com.example.demo.model.User;
 import com.example.demo.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 
 
 @RestController
+@CrossOrigin(origins = "*")
 @RequestMapping("/user/")
 public class UserController {
 
+    @Autowired
     UserRepository userRepository ;
 
+    public UserRepository getRepository() {
+        return userRepository;
+    }
+
+    public void setRepository(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
     @PostMapping
-    public ResponseEntity<User> createUser(@RequestBody User user){
-       userRepository.save(user);
-       System.out.println(userRepository.save(user));
+    public ResponseEntity createUser(@RequestBody User user) {
+        Integer id = (int) ((Math.random() * (3000 - 1)) + 1);
+        user.setId(id);
+       String checkUserExists = String.valueOf(userRepository.findById(user.getId()));
+       if(checkUserExists != "Optional.empty"){
+           return new ResponseEntity(HttpStatus.BAD_REQUEST);
+       }else{
+           userRepository.save(user);
+       }
        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
@@ -30,12 +47,6 @@ public class UserController {
         List<User> users ;
         users = userRepository.findAll();
         return new ResponseEntity<>(users, HttpStatus.OK);
-    }
-
-    @GetMapping(path="/teste")
-    public ResponseEntity<String> teste(){
-        String teste = "Conectou";
-        return new ResponseEntity<>(teste, HttpStatus.OK);
     }
 
     @GetMapping(path="/{id}")
@@ -67,6 +78,8 @@ public class UserController {
                     user.setIdade(newUser.getIdade());
                     user.setTelefone(newUser.getTelefone());
                     user.setCidade(newUser.getCidade());
+                    user.setEmail(newUser.getEmail());
+                    user.setSenha(newUser.getSenha());
                     User userUpdated = userRepository.save(user);
                     return ResponseEntity.ok().body(userUpdated);
 

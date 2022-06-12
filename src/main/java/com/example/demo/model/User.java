@@ -5,7 +5,6 @@ import lombok.Setter;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
 @Getter
@@ -22,5 +21,10 @@ public class User {
     private String telefone;
     @Column
     private String cidade;
+    @Column
+    private String email;
+    @Column
+    private String senha;
+
 
 }

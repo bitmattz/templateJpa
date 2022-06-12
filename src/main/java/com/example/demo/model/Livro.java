@@ -18,16 +18,10 @@ public class Livro {
     @Column
     private String nome;
     @Column
-    private Double preco;
-    @Column
-    private Boolean usado = false;
-    @Column
-    private String foto;
-    @Column
     private String descr;
-    @Column
-    private String isbn;
-    @Column
-    private Integer idUser;
 
+    @Column(name="id_user")
+    private Integer idUser;
+    @Column
+    private String autor;
 }
